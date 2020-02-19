@@ -1,0 +1,11 @@
+FROM mhart/alpine-node:12 AS Builder
+WORKDIR /opt/app
+COPY package.json package-lock.json ./
+RUN npm i --quiet
+
+FROM mhart/alpine-node:12
+WORKDIR /opt/app
+COPY --from=Builder /opt/app/node_modules node_modules
+COPY . .
+EXPOSE 8888
+CMD ["sh", "-c", "npm run load /opt/app/src/resources/data/sites.json flushdb && npm run dev"]
